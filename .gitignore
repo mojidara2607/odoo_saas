@@ -1,0 +1,40 @@
+# ============================================================
+# .gitignore - Files/folders to exclude from Git
+# ============================================================
+
+# --- Environment variables (contains passwords!) ---
+.env
+
+# --- Database data (too large for Git) ---
+prajatha/data/
+farmer/data/
+client3/data/
+client4/data/
+client5/data/
+
+# --- Odoo filestore (uploaded files, too large) ---
+prajatha/odoo-data/
+farmer/odoo-data/
+client3/odoo-data/
+client4/odoo-data/
+client5/odoo-data/
+
+# --- Backups (too large for Git) ---
+backups/
+
+# --- Python cache files ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# --- IDE files ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS files ---
+Thumbs.db
+Desktop.ini
+.DS_Store

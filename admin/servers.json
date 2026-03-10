@@ -1,0 +1,22 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Prajatha DB",
+      "Group": "Odoo SaaS Clients",
+      "Host": "db-postgresql-fra1-21198-do-user-34310474-0.j.db.ondigitalocean.com",
+      "Port": 25060,
+      "MaintenanceDB": "defaultdb",
+      "Username": "prajatha",
+      "SSLMode": "require"
+    },
+    "2": {
+      "Name": "Farmer DB",
+      "Group": "Odoo SaaS Clients",
+      "Host": "db-postgresql-fra1-21198-do-user-34310474-0.j.db.ondigitalocean.com",
+      "Port": 25060,
+      "MaintenanceDB": "defaultdb",
+      "Username": "farmer",
+      "SSLMode": "require"
+    }
+  }
+}

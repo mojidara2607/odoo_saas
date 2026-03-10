@@ -1,0 +1,153 @@
+============================================================
+  ODOO MULTI-TENANT SaaS ARCHITECTURE DIAGRAM
+============================================================
+
+  This diagram shows how 5 separate companies (tenants)
+  each get their own isolated Odoo + PostgreSQL instance.
+
+
+                         +-------------------+
+                         |    YOUR BROWSER    |
+                         +-------------------+
+                                  |
+          +-----------+-----------+-----------+-----------+
+          |           |           |           |           |
+     :8070       :8071       :8072       :8073       :8074
+          |           |           |           |           |
+  +-------+   +-------+   +-------+   +-------+   +-------+
+  |       |   |       |   |       |   |       |   |       |
+  | Odoo  |   | Odoo  |   | Odoo  |   | Odoo  |   | Odoo  |
+  |Client1|   |Client2|   |Client3|   |Client4|   |Client5|
+  |       |   |       |   |       |   |       |   |       |
+  +---+---+   +---+---+   +---+---+   +---+---+   +---+---+
+      |           |           |           |           |
+  (network1) (network2) (network3) (network4) (network5)
+      |           |           |           |           |
+  +---+---+   +---+---+   +---+---+   +---+---+   +---+---+
+  |       |   |       |   |       |   |       |   |       |
+  |Postgre|   |Postgre|   |Postgre|   |Postgre|   |Postgre|
+  | SQL 1 |   | SQL 2 |   | SQL 3 |   | SQL 4 |   | SQL 5 |
+  |       |   |       |   |       |   |       |   |       |
+  +---+---+   +---+---+   +---+---+   +---+---+   +---+---+
+      |           |           |           |           |
+  [prajatha/]  [farmer/]
+   data/       data/       data/       data/       data/
+   odoo-data/  odoo-data/  odoo-data/  odoo-data/  odoo-data/
+   addons/     addons/     addons/     addons/     addons/
+
+
+============================================================
+  KEY CONCEPTS
+============================================================
+
+  ISOLATION:
+  - Each client has its OWN PostgreSQL database
+  - Each client has its OWN Docker network
+  - Client 1 CANNOT access Client 2's data (and vice versa)
+  - Even if a hacker compromises Client 1, Client 2 is safe
+
+  PERSISTENCE:
+  - Database files are stored in client{N}/data/
+  - Uploaded files are stored in client{N}/odoo-data/
+  - Even if Docker containers are deleted, data survives
+
+  CUSTOM MODULES:
+  - Each client has its own addons/ folder
+  - Different clients can have different modules installed
+  - Modules are mounted at /mnt/extra-addons in the container
+
+
+============================================================
+  NGINX REVERSE PROXY (OPTIONAL)
+============================================================
+
+                         +-------------------+
+                         |    YOUR BROWSER    |
+                         +-------------------+
+                                  |
+                             Port :80
+                                  |
+                         +--------+--------+
+                         |                 |
+                         |     NGINX       |
+                         |  Reverse Proxy  |
+                         |                 |
+                         +--------+--------+
+                                  |
+          +-----------+-----------+-----------+-----------+
+          |           |           |           |           |
+   prajatha.    farmer.
+   localhost    localhost    localhost   localhost   localhost
+          |           |           |           |           |
+     Odoo:8069  Odoo:8069  Odoo:8069  Odoo:8069  Odoo:8069
+     (Client1)  (Client2)  (Client3)  (Client4)  (Client5)
+
+
+============================================================
+  DATABASE ADMINISTRATOR (pgAdmin)
+============================================================
+
+                         +-------------------+
+                         |    YOUR BROWSER    |
+                         +-------------------+
+                                  |
+                             Port :0308
+                                  |
+                         +--------+--------+
+                         |                 |
+                         |     pgAdmin     |
+                         |  (Administrator)|
+                         |                 |
+                         +--------+--------+
+                                  |
+          +-----------+-----------+-----------+-----------+
+          |           |           |           |           |
+      db-prajatha  db-farmer
+        :5432       :5432       :5432       :5432       :5432
+
+
+============================================================
+  DOCKER CONTAINERS (10 total + 1 nginx + 1 pgadmin)
+============================================================
+
+  Container Name         | Image        | Port
+  -----------------------|--------------|----------
+  saas-odoo-prajatha     | odoo:17      | 8070
+  saas-db-prajatha       | postgres:15  | (internal)
+  saas-odoo-farmer       | odoo:17      | 8071
+  saas-db-farmer         | postgres:15  | (internal)
+  saas-odoo-client3      | odoo:17      | 8072
+  saas-db-client3        | postgres:15  | (internal)
+  saas-odoo-client4      | odoo:17      | 8073
+  saas-db-client4        | postgres:15  | (internal)
+  saas-odoo-client5      | odoo:17      | 8074
+  saas-db-client5        | postgres:15  | (internal)
+  saas-nginx             | nginx:alpine | 80
+  saas-pgadmin           | dpage/pgadmin4:8 | 0308
+
+
+============================================================
+  FOLDER STRUCTURE
+============================================================
+
+  odoo-saas-demo/
+  |
+  +-- docker-compose.yml      (defines all containers)
+  +-- .env                    (passwords & config)
+  +-- nginx/
+  |   +-- default.conf        (reverse proxy rules)
+  +-- prajatha/
+  |   +-- addons/             (custom Odoo modules)
+  |   +-- data/               (PostgreSQL database files)
+  |   +-- odoo-data/          (uploaded files & filestore)
+  +-- farmer/                 (same structure)
+  +-- client3/                (same structure)
+  +-- client4/                (same structure)
+  +-- client5/                (same structure)
+  +-- backups/                (database backup files)
+  +-- start-all.bat           (start everything)
+  +-- stop-all.bat            (stop everything)
+  +-- reset-all.bat           (delete everything)
+  +-- README.md               (documentation)
+  +-- DEMO-SCRIPT.md          (presentation guide)
+  +-- TROUBLESHOOTING.md      (problem solving)

@@ -1,0 +1,152 @@
+============================================================
+  DOCKER COMMANDS CHEATSHEET
+  Odoo Multi-Tenant SaaS Demo
+============================================================
+
+  IMPORTANT: Always run these commands from the project folder:
+  cd C:\odoo-saas-demo
+  (or wherever you placed the project)
+
+
+============================================================
+  BASIC COMMANDS
+============================================================
+
+  Start all containers:
+    docker compose up -d
+
+  Stop all containers (data is kept):
+    docker compose down
+
+  Stop all and DELETE volumes:
+    docker compose down -v
+
+  Restart all containers:
+    docker compose restart
+
+  See running containers:
+    docker compose ps
+
+  See ALL containers (including stopped):
+    docker ps -a
+
+
+============================================================
+  VIEWING LOGS
+============================================================
+
+  All logs (live):
+    docker compose logs -f
+
+  Logs for specific client:
+    docker compose logs -f odoo-prajatha
+    docker compose logs -f odoo-farmer
+    docker compose logs -f db-prajatha
+
+  Last 100 lines only:
+    docker compose logs --tail=100 odoo-prajatha
+
+  Logs with timestamps:
+    docker compose logs -f -t odoo-prajatha
+
+
+============================================================
+  MANAGING INDIVIDUAL CLIENTS
+============================================================
+
+  Start only Client 1:
+    docker compose up -d odoo-prajatha db-prajatha
+
+  Stop only Client 2:
+    docker compose stop odoo-farmer db-farmer
+
+  Restart only Client 3:
+    docker compose restart odoo-client3
+
+  Remove a specific client's containers:
+    docker compose rm -sf odoo-client4 db-client4
+
+
+============================================================
+  DATABASE COMMANDS
+============================================================
+
+  Connect to Client 1's database:
+    docker exec -it saas-db-prajatha psql -U odoo_prajatha
+
+  List all databases in Client 1:
+    docker exec saas-db-prajatha psql -U odoo_prajatha -l
+
+  Backup Client 1's database:
+    docker exec saas-db-prajatha pg_dumpall -U odoo_prajatha > backup_prajatha.sql
+
+  Restore a backup to Client 1:
+    docker exec -i saas-db-prajatha psql -U odoo_prajatha < backup_prajatha.sql
+
+
+============================================================
+  ODOO SHELL ACCESS
+============================================================
+
+  Open a bash shell inside Odoo Client 1:
+    docker exec -it saas-odoo-prajatha bash
+
+  Open Odoo shell (Python console) for Client 1:
+    docker exec -it saas-odoo-prajatha odoo shell -d YOUR_DB_NAME
+
+
+============================================================
+  CLEANUP COMMANDS
+============================================================
+
+  Remove all stopped containers:
+    docker container prune
+
+  Remove unused images:
+    docker image prune
+
+  Remove unused volumes:
+    docker volume prune
+
+  NUCLEAR OPTION - Remove everything:
+    docker system prune -a --volumes
+    (WARNING: This removes ALL Docker data, not just this project!)
+
+
+============================================================
+  TROUBLESHOOTING COMMANDS
+============================================================
+
+  Check if a port is in use:
+    netstat -ano | findstr :8070
+
+  Check Docker disk usage:
+    docker system df
+
+  Inspect a container:
+    docker inspect saas-odoo-prajatha
+
+  Check container resource usage:
+    docker stats
+
+  Force recreate containers:
+    docker compose up -d --force-recreate
+
+
+============================================================
+  USEFUL ODOO URLS
+============================================================
+
+  Database Manager (for any client):
+    http://localhost:8070/web/database/manager
+    http://localhost:8071/web/database/manager
+    (etc.)
+
+  Login Page:
+    http://localhost:8070/web/login
+
+  Odoo Admin Settings:
+    http://localhost:8070/web#action=base_setup.action_general_configuration
+
+  Module List:
+    http://localhost:8070/web#action=base.open_module_tree
