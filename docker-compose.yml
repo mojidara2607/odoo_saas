@@ -1,5 +1,5 @@
 # ============================================================
-# Odoo 17 Multi-Tenant SaaS Demo - Docker Compose
+# Odoo 19 Multi-Tenant SaaS Demo - Docker Compose
 # ============================================================
 # This file creates 2 Odoo instances
 # that connect to PostgreSQL installed on the Ubuntu server host.
@@ -16,10 +16,10 @@ services:
 
   # Prajatha - Odoo Application
   odoo-prajatha:
-    image: ${ODOO_IMAGE}                         # Uses odoo:17 from .env
-    container_name: saas-odoo-prajatha
+    image: odoo:17.0                         # Uses odoo:19.0 from .env
+    container_name: odoo-prajatha
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "${PRAJATHA_DB_HOST}:host-gateway"
     environment:
       HOST: ${PRAJATHA_DB_HOST}
       PORT: ${PRAJATHA_DB_PORT}
@@ -30,16 +30,16 @@ services:
     ports:
       - "${PRAJATHA_PORT}:8069"                  # Map 8070 -> internal 8069
     volumes:
-      - ./prajatha/odoo-data:/var/lib/odoo       # Persist filestore
-      - ./prajatha/addons:/mnt/extra-addons      # Custom modules folder
-      - ./certs/ca-certificate.crt:/run/certs/do-ca.crt:ro
+       - ./prajatha/odoo-prajatha-data:/var/lib/odoo
+       - ./prajatha/addons:/mnt/extra-addons
     command:
       - odoo
       - --db_host=${PRAJATHA_DB_HOST}
       - --db_port=${PRAJATHA_DB_PORT}
       - --db_user=${PRAJATHA_DB_USER}
       - --db_password=${PRAJATHA_DB_PASSWORD}
-      - --admin-passwd=${ODOO_MASTER_PASSWORD}
+      - --database=${PRAJATHA_DB_NAME}
+      - --db-filter=^${PRAJATHA_DB_NAME}$
     restart: unless-stopped
     networks:
       - network-prajatha
@@ -47,10 +47,10 @@ services:
   # ========== FARMER ==========
 
   odoo-farmer:
-    image: ${ODOO_IMAGE}
-    container_name: saas-odoo-farmer
+    image: odoo:19.0
+    container_name: odoo-farmer
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "${FARMER_DB_HOST}:host-gateway"
     environment:
       HOST: ${FARMER_DB_HOST}
       PORT: ${FARMER_DB_PORT}
@@ -61,16 +61,16 @@ services:
     ports:
       - "${FARMER_PORT}:8069"
     volumes:
-      - ./farmer/odoo-data:/var/lib/odoo
+      - odoo-farmer-data:/var/lib/odoo
       - ./farmer/addons:/mnt/extra-addons
-      - ./certs/ca-certificate.crt:/run/certs/do-ca.crt:ro
     command:
       - odoo
       - --db_host=${FARMER_DB_HOST}
       - --db_port=${FARMER_DB_PORT}
       - --db_user=${FARMER_DB_USER}
       - --db_password=${FARMER_DB_PASSWORD}
-      - --admin-passwd=${ODOO_MASTER_PASSWORD}
+      - --database=${FARMER_DB_NAME}
+      - --db-filter=^${FARMER_DB_NAME}$
     restart: unless-stopped
     networks:
       - network-farmer
@@ -80,7 +80,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: saas-nginx
+    container_name: nginx
     ports:
       - "${NGINX_PORT}:80"
     volumes:
@@ -101,3 +101,6 @@ networks:
     driver: bridge
   network-farmer:
     driver: bridge
+
+volumes:
+  odoo-farmer-data:
