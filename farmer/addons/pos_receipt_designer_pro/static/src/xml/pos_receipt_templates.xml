@@ -149,9 +149,6 @@
             <div class="receipt-pro-sep-double"/>
         </xpath>
 
-
-        
-
         <!-- Style the TOTAL line -->
         <xpath expr="//div[hasclass('receipt-total')]" position="attributes">
             <attribute name="class">pos-receipt-amount receipt-total fw-bolder receipt-pro-total</attribute>
