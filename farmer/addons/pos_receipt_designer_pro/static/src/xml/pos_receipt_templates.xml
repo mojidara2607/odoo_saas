@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- ============================================================
+         ReceiptHeader — Compact thermal receipt header
+         ============================================================ -->
+    <t t-name="pos_receipt_designer_pro.ReceiptHeader"
+       t-inherit="point_of_sale.ReceiptHeader"
+       t-inherit-mode="extension">
+
+        <!-- Smaller logo for thermal receipt feel -->
+        <xpath expr="//img[hasclass('pos-receipt-logo')]" position="attributes">
+            <attribute name="style">max-height: 45px; display: block; margin: 0 auto 2px auto;</attribute>
+        </xpath>
+
+        <!-- Replace the ticket ref / date block with compact centered header -->
+        <xpath expr="//div[hasclass('text-center') and hasclass('pt-3')]" position="replace">
+            <div class="receipt-pro-header text-center">
+                <div class="receipt-pro-sep-dashed"/>
+                <div class="receipt-pro-title">
+                    <t t-if="order.config._IS_VAT">VAT </t>RECEIPT
+                </div>
+                <div class="receipt-pro-meta">
+                    <div>Ref: <t t-out="order.pos_reference"/></div>
+                    <div t-if="order.date_order" t-out="order.formatDateOrTime('date_order')"/>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Compact cashier / contact block -->
+        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="attributes">
+            <attribute name="class">pos-receipt-contact receipt-pro-contact</attribute>
+        </xpath>
+
+        <!-- Compact customer block -->
+        <xpath expr="//div[hasclass('pos-receipt-customer')]" position="attributes">
+            <attribute name="class">pos-receipt-customer receipt-pro-customer</attribute>
+        </xpath>
+
+    </t>
+
+    <!-- ============================================================
+         Orderline — Receipt-mode custom row with:
+           1. Main row:    #  |  Name  |  Qty  |  Rate  |  Disc  |  Amount
+           2. Description block (below the main row, receipt only):
+              - Barcode line     (if product has barcode)
+              - Tax breakdown    (if line has taxes)
+
+         DATA SOURCES:
+         - Barcode       → line.product_id.barcode
+                            (loaded via data_service_options: product.product → barcode)
+         - Tax breakdown → receiptTaxBreakdownText  (getter on Orderline component)
+                            computed from line.order_id.unitPrices per-unit tax data
+         ============================================================ -->
+    <t t-name="pos_receipt_designer_pro.Orderline"
+       t-inherit="point_of_sale.Orderline"
+       t-inherit-mode="extension">
+
+        <!-- Insert receipt-specific table row BEFORE the stock line-details -->
+        <xpath expr="//div[hasclass('line-details')]" position="before">
+            <div t-if="vals.isReceipt" class="receipt-pro-line d-flex align-items-baseline">
+                <!-- Serial number: rendered by CSS counter (::before) -->
+                <span class="receipt-pro-sno"/>
+                <!-- Product name -->
+                <span class="receipt-pro-item-name flex-grow-1 text-truncate pe-1">
+                    <t t-esc="vals.name"/>
+                </span>
+                <!-- Quantity -->
+                <span class="receipt-pro-item-qty text-center">
+                    <t t-esc="vals.unitPart"/><small t-if="vals.decimalPart" t-out="vals.decimalPart" style="font-size: 85%;"/>
+                </span>
+                <!-- Unit price (rate) — hidden for combo sub-items -->
+                <span t-if="vals.price" class="receipt-pro-item-rate text-end font-monospace">
+                    <t t-out="line.currencyDisplayPriceUnit"/>
+                </span>
+                <!-- Line discount (%) — hidden for combo sub-items -->
+                <span t-if="vals.price" class="receipt-pro-item-disc text-end font-monospace">
+                    <t t-esc="getDiscountDisplay(line)"/>
+                </span>
+                <!-- Line total (amount) — hidden for combo sub-items -->
+                <span t-if="vals.price" class="receipt-pro-item-amt text-end font-monospace">
+                    <t t-out="vals.price"/>
+                </span>
+            </div>
+
+            <!-- ── Description sub-block: barcode + tax breakdown ── -->
+            <div t-if="vals.isReceipt and vals.price" class="receipt-pro-desc-block">
+                <!-- Barcode (only if product has one) -->
+                <div t-if="line.product_id and line.product_id.barcode"
+                     class="receipt-pro-barcode">
+                    Barcode: <t t-esc="line.product_id.barcode"/>
+                </div>
+                <!-- Per-unit tax breakdown, e.g. (0.250 + VAT 5% 0.013) -->
+                <div t-if="receiptTaxBreakdownText"
+                     class="receipt-pro-tax-detail">
+                    <t t-esc="receiptTaxBreakdownText"/>
+                </div>
+            </div>
+        </xpath>
+
+    </t>
+
+    <!-- ============================================================
+         OrderReceipt — Structured thermal receipt body
+         ============================================================ -->
+    <t t-name="pos_receipt_designer_pro.OrderReceipt"
+       t-inherit="point_of_sale.OrderReceipt"
+       t-inherit-mode="extension">
+
+        <!-- Reduce main receipt container padding -->
+        <xpath expr="//div[hasclass('pos-receipt')]" position="attributes">
+            <attribute name="class">pos-receipt receipt-pro-container</attribute>
+        </xpath>
+
+        <!-- Replace empty pt-3 spacer with 5-column header row -->
+        <xpath expr="//div[hasclass('pt-3')][1]" position="replace">
+            <div class="receipt-pro-sep-solid"/>
+            <div class="receipt-pro-col-hdr">
+                <span class="receipt-pro-col-sno">#</span>
+                <span class="receipt-pro-col-desc">Description</span>
+                <span class="receipt-pro-col-qty">Qty</span>
+                <span class="receipt-pro-col-rate">Rate</span>
+                <span class="receipt-pro-col-disc">DISC</span>
+                <span class="receipt-pro-col-amt">Amt</span>
+            </div>
+            <div class="receipt-pro-sep-solid"/>
+        </xpath>
+
+        <!-- Divider before tax section -->
+        <xpath expr="//div[hasclass('pos-receipt-taxes')]" position="before">
+            <div class="receipt-pro-sep-dashed" style="margin-top: 2px;"/>
+        </xpath>
+
+        <!-- Tighten the tax section -->
+        <xpath expr="//div[hasclass('pos-receipt-taxes')]" position="attributes">
+            <attribute name="class">pos-receipt-taxes receipt-pro-taxes</attribute>
+        </xpath>
+
+        <!-- Discount row — always visible (shows 0.000 when no discount) -->
+        <xpath expr="//div[hasclass('receipt-total')]" position="before">
+            <div class="pos-receipt-amount receipt-pro-discount d-flex">
+                <span>Discount</span>
+                <span t-out="formatCurrency(getReceiptTotalDiscount())" class="ms-auto font-monospace"/>
+            </div>
+        </xpath>
+
+        <!-- Add solid divider before Total line -->
+        <xpath expr="//div[hasclass('receipt-total')]" position="before">
+            <div class="receipt-pro-sep-double"/>
+        </xpath>
+
+        <!-- Style the TOTAL line -->
+        <xpath expr="//div[hasclass('receipt-total')]" position="attributes">
+            <attribute name="class">pos-receipt-amount receipt-total fw-bolder receipt-pro-total</attribute>
+        </xpath>
+
+        <!-- Add divider after Total line -->
+        <xpath expr="//div[hasclass('receipt-total')]" position="after">
+            <div class="receipt-pro-sep-double"/>
+        </xpath>
+
+        <!-- Hide the original discount row (after Change) since we show it in totals -->
+        <xpath expr="//span[hasclass('label-discount')]/.." position="replace">
+            <!-- replaced: discount now shown between tax and total -->
+        </xpath>
+
+        <!-- Compact QR code image -->
+        <xpath expr="//img[@id='posqrcode']" position="attributes">
+            <attribute name="style">max-width: 55px; max-height: 55px;</attribute>
+            <attribute name="class">m-0</attribute>
+        </xpath>
+
+        <!-- Thank-you message in before-footer slot -->
+        <xpath expr="//div[hasclass('before-footer')]" position="inside">
+            <div class="receipt-pro-thankyou text-center">
+                <div class="receipt-pro-sep-dashed"/>
+                <div class="receipt-pro-thanks-main">Thank you for your purchase!</div>
+                <div class="receipt-pro-thanks-sub">We appreciate your business.</div>
+                <div class="receipt-pro-thanks-sub">Goods once sold are not returnable.</div>
+            </div>
+        </xpath>
+
+        <!-- Compact company info footer -->
+        <xpath expr="//div[hasclass('d-flex', 'gap-2', 'pt-3')][last()]" position="attributes">
+            <attribute name="class">d-flex gap-1 receipt-pro-company</attribute>
+        </xpath>
+
+        <!-- Smaller "Powered by Odoo" -->
+        <xpath expr="//div[hasclass('pos-receipt-order-data')]" position="attributes">
+            <attribute name="class">pos-receipt-order-data text-center receipt-pro-powered</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('pos-receipt-order-data')]/span" position="replace">
+            <span class="receipt-pro-powered-txt">Powered by <b>Odoo</b></span>
+        </xpath>
+
+    </t>
+
+</templates>
