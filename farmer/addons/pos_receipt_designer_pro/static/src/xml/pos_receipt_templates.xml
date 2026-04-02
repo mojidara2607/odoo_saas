@@ -180,19 +180,11 @@
             </div>
         </xpath>
 
-        <!-- Compact company info footer -->
-        <xpath expr="//div[hasclass('d-flex', 'gap-2', 'pt-3')][last()]" position="attributes">
-            <attribute name="class">d-flex gap-1 receipt-pro-company</attribute>
-        </xpath>
+        <!-- Remove company details (name, address, phone, email, ZIP) -->
+        <xpath expr="//div[hasclass('d-flex') and hasclass('gap-2') and hasclass('pt-3')][div[hasclass('w-50')]]" position="replace"/>
 
-        <!-- Smaller "Powered by Odoo" -->
-        <xpath expr="//div[hasclass('pos-receipt-order-data')]" position="attributes">
-            <attribute name="class">pos-receipt-order-data text-center receipt-pro-powered</attribute>
-        </xpath>
-        <xpath expr="//div[hasclass('pos-receipt-order-data')]/span" position="replace">
-            <span class="receipt-pro-powered-txt">Powered by <b>Odoo</b></span>
-        </xpath>
-
+        <!-- Remove "Powered by Odoo" -->
+        <xpath expr="//div[hasclass('pos-receipt-order-data') and hasclass('text-center')]" position="replace"/>
     </t>
 
 </templates>
