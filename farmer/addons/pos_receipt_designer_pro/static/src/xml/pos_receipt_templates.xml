@@ -107,6 +107,27 @@
        t-inherit="point_of_sale.OrderReceipt"
        t-inherit-mode="extension">
 
+        <xpath expr="//div[hasclass('pos-receipt')]" position="inside">
+            <style>
+                /* Improve print clarity */
+                .pos-receipt {
+                    font-size: 16px !important;
+                    font-family: monospace, Arial, sans-serif !important;
+                    line-height: 1.5 !important;
+                }
+
+                /* Make text darker for thermal print */
+                .pos-receipt * {
+                    font-weight: 600 !important;
+                }
+
+                /* Optional: slightly bigger headings */
+                .receipt-pro-title {
+                    font-size: 17px !important;
+                    font-weight: 700 !important;
+                }
+            </style>
+        </xpath>
         <!-- Reduce main receipt container padding -->
         <xpath expr="//div[hasclass('pos-receipt')]" position="attributes">
             <attribute name="class">pos-receipt receipt-pro-container</attribute>
