@@ -74,6 +74,36 @@ services:
     restart: unless-stopped
     networks:
       - network-farmer
+      
+
+  odoo-wenetworkllc:
+    image: odoo:19.0
+    container_name: odoo-wenetworkllc
+    extra_hosts:
+      - "${WENETWORKLLC_DB_HOST}:host-gateway"
+    environment:
+      HOST: ${WENETWORKLLC_DB_HOST}
+      PORT: ${WENETWORKLLC_DB_PORT}
+      USER: ${WENETWORKLLC_DB_USER}
+      PASSWORD: ${WENETWORKLLC_DB_PASSWORD}
+      PGSSLMODE: ${WENETWORKLLC_DB_SSLMODE}
+      PGSSLROOTCERT: /run/certs/do-ca.crt
+    ports:
+      - "${WENETWORKLLC_PORT}:8069"
+    volumes:
+      - odoo-wenetworkllc-data:/var/lib/odoo
+      - ./wenetworkllc/addons:/mnt/extra-addons
+    command:
+      - odoo
+      - --db_host=${WENETWORKLLC_DB_HOST}
+      - --db_port=${WENETWORKLLC_DB_PORT}
+      - --db_user=${WENETWORKLLC_DB_USER}
+      - --db_password=${WENETWORKLLC_DB_PASSWORD}
+      - --database=${WENETWORKLLC_DB_NAME}
+      - --db-filter=^${WENETWORKLLC_DB_NAME}$
+    restart: unless-stopped
+    networks:
+      - network-wenetworkllc
 
   # ========== NGINX REVERSE PROXY (Optional) ==========
   # Allows access via prajatha.localhost and farmer.localhost.
@@ -92,6 +122,7 @@ services:
     networks:
       - network-prajatha
       - network-farmer
+      - network-wenetworkllc
 
 # ============================================================
 # NETWORKS - App traffic only
@@ -101,6 +132,9 @@ networks:
     driver: bridge
   network-farmer:
     driver: bridge
+  network-wenetworkllc:
+    driver: bridge
 
 volumes:
   odoo-farmer-data:
+  odoo-wenetworkllc-data:
