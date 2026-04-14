@@ -191,16 +191,7 @@
             <attribute name="class">m-0</attribute>
         </xpath>
 
-        <!-- Thank-you message in before-footer slot -->
-        <xpath expr="//div[hasclass('before-footer')]" position="inside">
-            <div class="receipt-pro-thankyou text-center">
-                <div class="receipt-pro-sep-dashed"/>
-                <div class="receipt-pro-thanks-main">Thank you for your purchase!</div>
-                <div class="receipt-pro-thanks-sub">We appreciate your business.</div>
-                <div class="receipt-pro-thanks-sub">Goods once sold are not returnable.</div>
-            </div>
-        </xpath>
-
+       
         <!-- Remove company details (name, address, phone, email, ZIP) -->
         <xpath expr="//div[hasclass('d-flex') and hasclass('gap-2') and hasclass('pt-3')][div[hasclass('w-50')]]" position="replace"/>
 
