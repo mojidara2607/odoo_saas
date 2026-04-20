@@ -16,7 +16,7 @@ services:
 
   # Prajatha - Odoo Application
   odoo-prajatha:
-    image: odoo:17.0                         # Uses odoo:19.0 from .env
+    image: odoo:19.0
     container_name: odoo-prajatha
     extra_hosts:
       - "${PRAJATHA_DB_HOST}:host-gateway"

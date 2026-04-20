@@ -1,0 +1,529 @@
+/* ==========================================================
+   POS Receipt Designer Pro — Compact Thermal Receipt Styles
+   ========================================================== */
+
+/* ----------------------------------------------------------
+   Base receipt container
+   ---------------------------------------------------------- */
+.pos-receipt.receipt-pro-container {
+    font-family: 'Courier New', 'Lucida Console', 'Consolas', monospace !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    max-width: 305px !important;
+    margin: 0 auto !important;
+    padding: 8px 12px !important;
+    color: #1a1a1a;
+}
+
+/* ----------------------------------------------------------
+   Separators / Dividers
+   ---------------------------------------------------------- */
+.receipt-pro-sep-dashed {
+    border: none;
+    border-top: 1px dashed #555;
+    margin: 4px 0;
+}
+
+.receipt-pro-sep-solid {
+    border: none;
+    border-top: 1px solid #333;
+    margin: 3px 0;
+}
+
+.receipt-pro-sep-double {
+    border: none;
+    border-top: 2px solid #000;
+    margin: 2px 0;
+}
+
+/* ----------------------------------------------------------
+   Receipt Header
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-pro-header {
+    padding: 0 0 2px 0;
+}
+
+.pos-receipt .receipt-pro-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 0 1px 0;
+}
+
+.pos-receipt .receipt-pro-meta {
+    font-size: 11px;
+    color: #333;
+    line-height: 1.4;
+    padding-bottom: 2px;
+}
+
+/* ----------------------------------------------------------
+   Cashier / Contact
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-pro-contact {
+    font-size: 11px;
+    line-height: 1.4;
+    padding: 2px 0;
+}
+
+.pos-receipt .receipt-pro-contact .cashier {
+    font-size: 11px;
+}
+
+/* Reduce tracking number from fs-1 to something reasonable */
+.pos-receipt .receipt-pro-contact .tracking-number {
+    font-size: 1.4rem !important;
+}
+
+/* ----------------------------------------------------------
+   Customer Section
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-pro-customer {
+    font-size: 11px;
+    margin-top: 2px !important;
+    padding: 3px 0 2px 0;
+    border-top: 1px dashed #999;
+}
+
+/* ----------------------------------------------------------
+   Items Column Header Row  (6 columns: # Desc Qty Rate Disc Amt)
+   ---------------------------------------------------------- */
+.receipt-pro-col-hdr {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 2px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.receipt-pro-col-sno {
+    flex: 0 0 7%;
+    text-align: left;
+    padding-right: 2px;
+}
+
+.receipt-pro-col-desc {
+    flex: 1 1 0;
+    text-align: left;
+    padding: 0 4px 0 0;
+}
+
+.receipt-pro-col-qty {
+    flex: 0 0 10%;
+    text-align: center;
+    padding: 0 3px;
+}
+
+.receipt-pro-col-rate {
+    flex: 0 0 18%;
+    text-align: right;
+    padding: 0 3px;
+}
+
+.receipt-pro-col-disc {
+    flex: 0 0 12%;
+    text-align: right;
+    padding: 0 3px;
+}
+
+.receipt-pro-col-amt {
+    flex: 0 0 20%;
+    text-align: right;
+    padding-left: 3px;
+}
+
+/* ----------------------------------------------------------
+   HIDE the stock Orderline "line-details" inside the receipt.
+   Our custom "receipt-pro-line" row replaces it visually.
+   The original remains untouched for the POS display screen
+   (no .pos-receipt ancestor there, so this rule never fires).
+   ---------------------------------------------------------- */
+.pos-receipt .orderline .line-details {
+    display: none !important;
+}
+
+/* ----------------------------------------------------------
+   CSS Counter — sequential serial numbers (1, 2, 3 …)
+   Resets on the order-container rendered by OrderDisplay.
+   Combo sub-items are excluded from the count.
+   ---------------------------------------------------------- */
+.pos-receipt .order-container {
+    counter-reset: receipt-item;
+}
+
+.pos-receipt .orderline:not(.orderline-combo) {
+    counter-increment: receipt-item;
+}
+
+.pos-receipt .orderline:not(.orderline-combo) .receipt-pro-sno::before {
+    content: counter(receipt-item);
+}
+
+/* Combo sub-items: hide the serial-number cell entirely */
+.pos-receipt .orderline.orderline-combo .receipt-pro-sno {
+    display: none;
+}
+
+/* ----------------------------------------------------------
+   Receipt Row  (our custom replacement for line-details)
+   Column widths MUST match the header above.
+   ---------------------------------------------------------- */
+.receipt-pro-line {
+    font-size: 11px;
+    line-height: 1.35;
+    padding: 2px 0;
+    width: 100%;
+}
+
+.receipt-pro-sno {
+    flex: 0 0 7%;
+    font-weight: 700;
+    font-size: 11px;
+    padding-right: 2px;
+}
+
+.receipt-pro-item-name {
+    font-size: 11px;
+    min-width: 0;          /* allow text-truncate to work in flex */
+    padding: 0 4px 0 0;
+}
+
+.receipt-pro-item-qty {
+    flex: 0 0 10%;
+    font-size: 11px;
+    text-align: center;
+    padding: 0 3px;
+    white-space: nowrap;
+}
+
+.receipt-pro-item-rate {
+    flex: 0 0 18%;
+    font-size: 11px;
+    text-align: right;
+    padding: 0 3px;
+    white-space: nowrap;
+}
+
+.receipt-pro-item-disc {
+    flex: 0 0 12%;
+    font-size: 11px;
+    text-align: right;
+    padding: 0 3px;
+    white-space: nowrap;
+}
+
+.receipt-pro-item-amt {
+    flex: 0 0 20%;
+    font-size: 11px;
+    text-align: right;
+    padding-left: 3px;
+    white-space: nowrap;
+}
+
+/* ----------------------------------------------------------
+   Description sub-block (barcode + tax breakdown)
+   Sits below the main item row, indented past the # column.
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-pro-desc-block {
+    padding: 0 0 1px 7%;     /* matches # column width */
+    line-height: 1.3;
+}
+
+.pos-receipt .receipt-pro-barcode {
+    font-size: 9px;
+    color: #444;
+    font-style: italic;
+}
+
+.pos-receipt .receipt-pro-tax-detail {
+    font-size: 9px;
+    color: #555;
+}
+
+/* ----------------------------------------------------------
+   Dashed separator AFTER each item row
+   ---------------------------------------------------------- */
+.pos-receipt .orderline {
+    padding: 1px 0 !important;
+    margin: 0 !important;
+    font-size: 11px;
+    border-bottom: 1px dashed #000;
+    padding-bottom: 3px !important;
+    margin-bottom: 1px !important;
+}
+
+/* No border after the very last orderline (before totals) */
+.pos-receipt .orderline:last-child {
+    border-bottom: none;
+}
+
+/* ----------------------------------------------------------
+   Info list below each item (discount, lot, notes)
+   The unit-price line ("$3.50 / Cup") is now redundant
+   because Rate column shows it, so we hide it.
+   ---------------------------------------------------------- */
+.pos-receipt .orderline .info-list {
+    font-size: 10px !important;
+    padding-left: 7% !important;
+    margin: 0 !important;
+    color: #555;
+    line-height: 1.3 !important;
+}
+
+.pos-receipt .orderline .info-list li {
+    padding: 0 !important;
+    line-height: 1.3;
+}
+
+/* Hide the "3.50 / Cup" unit price line — Rate column shows this now.
+   Target only the first .price-per-unit (the plain unit price),
+   NOT the discount .price-per-unit (which has an <i> child). */
+.pos-receipt .orderline .info-list > li.price-per-unit:not(:has(.fa)) {
+    display: none !important;
+}
+
+.pos-receipt .orderline .customer-note {
+    font-size: 10px !important;
+    padding: 1px 4px !important;
+    margin: 1px 0 !important;
+}
+
+/* Combo lines (sub-items) — keep compact */
+.pos-receipt .orderline-combo {
+    font-size: 10px !important;
+    margin-left: 12px !important;
+}
+
+/* ----------------------------------------------------------
+   Tax Section
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-pro-taxes {
+    padding-top: 2px !important;
+    font-size: 11px !important;
+}
+
+.pos-receipt .receipt-pro-taxes .d-flex,
+.pos-receipt .pos-receipt-taxes .d-flex {
+    padding: 1px 0;
+    font-size: 11px;
+}
+
+/* ----------------------------------------------------------
+   Total Line
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-pro-total {
+    padding: 4px 0 !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+    letter-spacing: 0.3px;
+    border: none !important;
+}
+
+.pos-receipt .receipt-pro-total .label-total {
+    text-transform: uppercase;
+}
+
+/* ----------------------------------------------------------
+   Rounding & To-Pay
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-rounding,
+.pos-receipt .receipt-to-pay {
+    font-size: 11px;
+    padding: 1px 0;
+}
+
+/* ----------------------------------------------------------
+   Payment Lines
+   ---------------------------------------------------------- */
+.pos-receipt .paymentlines {
+    font-size: 11px !important;
+    padding: 1px 0;
+}
+
+/* ----------------------------------------------------------
+   Change Line
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-change {
+    font-size: 11px;
+    color: #333;
+    padding: 1px 0;
+}
+
+/* ----------------------------------------------------------
+   Discount Row (totals section)
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-pro-discount {
+    font-size: 11px;
+    padding: 1px 0;
+}
+
+/* ----------------------------------------------------------
+   Discount Summary (original — now hidden via XML replace)
+   ---------------------------------------------------------- */
+.pos-receipt .label-discount {
+    font-style: italic;
+    font-size: 11px;
+}
+
+/* ----------------------------------------------------------
+   QR Code / Portal Section
+   ---------------------------------------------------------- */
+.pos-receipt #posqrcode {
+    max-width: 55px !important;
+    max-height: 55px !important;
+}
+
+.pos-receipt .portal-url,
+.pos-receipt .unique-code {
+    font-size: 10px;
+}
+
+/* ----------------------------------------------------------
+   Thank You Section
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-pro-thankyou {
+    padding: 2px 0;
+}
+
+.pos-receipt .receipt-pro-thanks-main {
+    font-weight: 700;
+    font-size: 12px;
+    padding: 3px 0 1px 0;
+}
+
+.pos-receipt .receipt-pro-thanks-sub {
+    font-size: 10px;
+    color: #555;
+    line-height: 1.4;
+}
+
+/* ----------------------------------------------------------
+   Receipt Footer (config.receipt_footer text)
+   ---------------------------------------------------------- */
+.pos-receipt .pos-receipt-center-align {
+    font-size: 10px;
+    padding-top: 4px !important;
+}
+
+/* ----------------------------------------------------------
+   Company Info Footer
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-pro-company {
+    border-top: 1px dashed #555;
+    padding-top: 4px;
+    margin-top: 4px;
+    font-size: 10px !important;
+}
+
+.pos-receipt .receipt-pro-company .w-50 {
+    font-size: 10px !important;
+}
+
+.pos-receipt .receipt-pro-company .pos-config-name {
+    font-weight: 700;
+}
+
+/* ----------------------------------------------------------
+   Powered By Odoo
+   ---------------------------------------------------------- */
+.pos-receipt .receipt-pro-powered {
+    padding-top: 4px !important;
+}
+
+.pos-receipt .receipt-pro-powered-txt {
+    font-size: 9px;
+    color: #aaa;
+}
+
+/* ----------------------------------------------------------
+   Shipping / Delivery Date
+   ---------------------------------------------------------- */
+.pos-receipt .pos-receipt-order-data {
+    font-size: 11px;
+    padding: 2px 0;
+}
+
+/* ----------------------------------------------------------
+   Monospace alignment for all price values
+   ---------------------------------------------------------- */
+.pos-receipt .font-monospace {
+    font-family: 'Courier New', 'Lucida Console', 'Consolas', monospace !important;
+}
+
+.pos-receipt .pos-receipt-right-align {
+    font-family: 'Courier New', 'Lucida Console', 'Consolas', monospace !important;
+}
+
+/* ----------------------------------------------------------
+   Override Bootstrap spacing utilities inside receipt
+   to keep everything tight
+   ---------------------------------------------------------- */
+.pos-receipt.receipt-pro-container .pt-1 {
+    padding-top: 2px !important;
+}
+
+.pos-receipt.receipt-pro-container .pt-3 {
+    padding-top: 4px !important;
+}
+
+.pos-receipt.receipt-pro-container .mt-2 {
+    margin-top: 3px !important;
+}
+
+.pos-receipt.receipt-pro-container .gap-2 {
+    gap: 0.25rem !important;
+}
+
+/* ----------------------------------------------------------
+   Payment terminal ticket (pre-formatted text)
+   ---------------------------------------------------------- */
+.pos-receipt .pos-payment-terminal-receipt {
+    padding-top: 4px !important;
+}
+
+.pos-receipt .pos-payment-terminal-receipt pre {
+    font-size: 10px;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+/* ----------------------------------------------------------
+   Print Styles — tighter for actual thermal paper
+   ---------------------------------------------------------- */
+@media print {
+    .pos-receipt.receipt-pro-container {
+        max-width: 280px !important;
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+    }
+
+    .pos-receipt .receipt-pro-title {
+        font-size: 13px;
+    }
+
+    .pos-receipt .receipt-pro-total {
+        font-size: 13px !important;
+    }
+
+    .pos-receipt .receipt-pro-line,
+    .pos-receipt .receipt-pro-item-name,
+    .pos-receipt .receipt-pro-item-qty,
+    .pos-receipt .receipt-pro-item-rate,
+    .pos-receipt .receipt-pro-item-disc,
+    .pos-receipt .receipt-pro-item-amt,
+    .pos-receipt .receipt-pro-sno {
+        font-size: 10px !important;
+    }
+
+    .pos-receipt .receipt-pro-col-hdr {
+        font-size: 10px;
+    }
+
+    .pos-receipt .receipt-pro-barcode,
+    .pos-receipt .receipt-pro-tax-detail {
+        font-size: 8px !important;
+    }
+}
