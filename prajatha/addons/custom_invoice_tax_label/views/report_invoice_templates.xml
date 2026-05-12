@@ -37,18 +37,19 @@
         </xpath>
 
         <!--
-            Invoice Date and Due Date in DDMMYY format (e.g. 12 May 2026 -> 120526).
-            Targets the value div by `t-field` attribute; GCC adds bilingual labels
-            inside the parent <div name="invoice_date"/> but does not touch the
-            value div, so this xpath matches in both vanilla and GCC trees.
-            To use a separated form, change '%d%m%y' to '%d-%m-%y' (12-05-26)
-            or '%d/%m/%y' (12/05/26).
+            Invoice Date and Due Date in DD/MM/YYYY format
+            (e.g. 11 May 2026 -> 11/05/2026, 9 Aug 2026 -> 09/08/2026).
+            Targets the value div by `t-field` attribute; GCC adds bilingual
+            labels inside the parent <div name="invoice_date"/> but does not
+            touch the value div, so this xpath matches in both vanilla and
+            GCC trees. %d / %m / %Y are all zero-padded fixed-width tokens,
+            so single-digit days and months render with a leading zero.
         -->
         <xpath expr="//div[@t-field='o.invoice_date']" position="replace">
-            <div t-out="o.invoice_date and o.invoice_date.strftime('%d%m%y') or ''">120526</div>
+            <div t-out="o.invoice_date and o.invoice_date.strftime('%d/%m/%Y') or ''">11/05/2026</div>
         </xpath>
         <xpath expr="//div[@t-field='o.invoice_date_due']" position="replace">
-            <div t-out="o.invoice_date_due and o.invoice_date_due.strftime('%d%m%y') or ''">120526</div>
+            <div t-out="o.invoice_date_due and o.invoice_date_due.strftime('%d/%m/%Y') or ''">09/08/2026</div>
         </xpath>
     </template>
 
