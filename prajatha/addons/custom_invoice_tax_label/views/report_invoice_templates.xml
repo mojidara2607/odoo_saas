@@ -51,6 +51,22 @@
         <xpath expr="//div[@t-field='o.invoice_date_due']" position="replace">
             <div t-out="o.invoice_date_due and o.invoice_date_due.strftime('%d/%m/%Y') or ''">09/08/2026</div>
         </xpath>
+
+        <!--
+            Inject "Payment terms: <name>" before the payment_communication
+            anchor in the base view. Named `payment_term_custom` so that any
+            GCC xpath which removes the original <p name="payment_term"> does
+            not match this node. The base view exposes <p name="payment_communication">
+            and GCC preserves that anchor (it renders payment communication in
+            its bilingual block), so this injection survives in both vanilla
+            and GCC-installed environments.
+        -->
+        <xpath expr="//p[@name='payment_communication']" position="before">
+            <p t-if="o.invoice_payment_term_id" name="payment_term_custom" class="mb-1">
+                <span>Payment terms: </span>
+                <span t-field="o.invoice_payment_term_id.name"/>
+            </p>
+        </xpath>
     </template>
 
 </odoo>

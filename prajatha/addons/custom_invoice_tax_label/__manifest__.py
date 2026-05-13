@@ -1,6 +1,6 @@
 {
     'name': 'Custom Invoice Tax Label',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'summary': 'Force "Tax Invoice" title and DDMMYY dates on the customer-invoice PDF (vanilla + GCC compatible)',
     'description': """
 Replaces the title on the Customer Invoice PDF with "Tax Invoice" and renders
