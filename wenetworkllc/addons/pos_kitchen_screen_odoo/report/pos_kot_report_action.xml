@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_pos_kot_pdf" model="ir.actions.report">
+        <field name="name">KOT PDF</field>
+        <field name="model">pos.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pos_kitchen_screen_odoo.report_pos_kot_pdf</field>
+        <field name="report_file">pos_kitchen_screen_odoo.report_pos_kot_pdf</field>
+        <field name="paperformat_id" ref="paperformat_pos_kot"/>
+        <field name="print_report_name">'KOT - %s' % (object.pos_reference or object.name or '')</field>
+    </record>
+</odoo>

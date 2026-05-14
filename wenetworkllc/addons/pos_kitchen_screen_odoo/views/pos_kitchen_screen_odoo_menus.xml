@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="pos_kitchen_screen_menu_root"
+              name="Kitchen Screen"
+              parent="point_of_sale.menu_point_root"
+              sequence="10"
+              groups="point_of_sale.group_pos_user"/>
+
+    <menuitem id="pos_kitchen_screen_menu_config"
+              name="Configuration"
+              parent="pos_kitchen_screen_menu_root"
+              action="kitchen_screen_action"
+              sequence="10"
+              groups="point_of_sale.group_pos_manager"/>
+
+    <menuitem id="pos_kitchen_screen_menu_dashboard"
+              name="Kitchen Display"
+              parent="pos_kitchen_screen_menu_root"
+              action="kitchen_custom_dashboard_action"
+              sequence="20"
+              groups="point_of_sale.group_pos_user"/>
+</odoo>
